@@ -32,6 +32,14 @@ gmd:
 # Framework Configuration - Spring Boot, Camel, Logback 등 프레임워크 설정
 # Spring Boot
 spring:
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
   devtools:    livereload:      port: 35730
   datasource:
     driver-class-name: com.tmax.tibero.jdbc.TbDriver
@@ -74,8 +82,8 @@ camel:
       #group-id: center
       #brokers: 10.175.91.211:9092,10.175.91.212:9092,10.175.91.213:9092
       brokers:  10.47.39.67:9092,10.47.39.124:9092
-#log4j
-log4j:
+   
+
            
 # Logging  
 logging:
