@@ -13,7 +13,7 @@ eips:
     topic:
        aRoute: data-a-${USERDOMAIN_ROAMINGPROFILE}
        bRoute: data-b-${USERDOMAIN_ROAMINGPROFILE}
-       historyRoute : history-topic-${USERDOMAIN_ROAMINGPROFILE}
+       historyRouteGroupId : history-topic-${USERDOMAIN_ROAMINGPROFILE}
        historyReceiveRoute : history-receive-topic-${USERDOMAIN_ROAMINGPROFILE}
        historyWriteRoute : history-write-topic-${USERDOMAIN_ROAMINGPROFILE}
   consumer:
