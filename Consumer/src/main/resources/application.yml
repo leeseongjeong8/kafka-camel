@@ -1,0 +1,88 @@
+######################################################################
+# EIPs Configuration - 연계 플랫폼 설정
+eips: 
+  agent:
+    id: ${eips.agent.id}
+    network: inner
+    data-dir: .
+    file-configurer:
+      read-file: true
+      write-file: false
+      config-dir: ${eips.agent.data-dir}/config
+  command:
+    topic:
+       aRoute: data-a-${USERDOMAIN_ROAMINGPROFILE}
+       bRoute: data-b-${USERDOMAIN_ROAMINGPROFILE}
+       historyRoute : history-topic-${USERDOMAIN_ROAMINGPROFILE}
+       historyReceiveRoute : history-receive-topic-${USERDOMAIN_ROAMINGPROFILE}
+       historyWriteRoute : history-write-topic-${USERDOMAIN_ROAMINGPROFILE}
+  consumer:
+    aRouteGroupId: ConsumerA
+    bRouteGroupId: ${eips.consumer.bRouteGroudId}
+    historyRouteGroupId: historyConsumer
+  csv:
+    fileDir: C:\dev\project\CSV
+    fileName: projectCSV.csv
+    errorfileDir: C:\dev\project\pass
+    errorFileName: pass.csv
+  json:
+    dataFileDir: C:\dev\project\json
+    dataAFileName: ${eips.command.topic.a-route}_offset_timestamp.json
+    dataBFileName: ${eips.command.topic.b-route}_offset_timestamp.json
+    
+######################################################################
+# GMD Configuration - 국가기준 설정
+gmd:
+  datasource:
+    oracle:
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      url: jdbc:oracle:thin:@10.47.39.124:1521:ORCL
+      username: GMDMF
+      password: gmdmf
+    tibero:
+      driverClassName: com.tmax.tibero.jdbc.TbDriver
+      url: jdbc:tibero:thin:@10.47.39.125:8629:DB_D_GMD
+      username: GMDMF
+      password: gmdmf         
+######################################################################
+# Framework Configuration - Spring Boot, Camel, Logback 등 프레임워크 설정
+# Spring Boot
+spring:
+  devtools:
+    livereload:
+      port: 35732
+  datasource:
+    driver-class-name: com.tmax.tibero.jdbc.TbDriver
+    url: jdbc:tibero:thin:@10.47.39.125:8629:DB_D_GMD
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    url: jdbc:oracle:thin:@10.47.39.124:1521:ORCL
+    username: GMDMF
+    password: gmdmf
+    hikari:
+      maximum-pool-size: 4
+  h2:
+    console:
+      enabled: true        
+
+# Apache Camel
+camel:
+  springboot:
+    main-run-controller: true
+  component:
+    kafka:
+      #group-id: ${}
+      auto-commit-enable: false
+      auto-offset-reset: latest
+      #brokers: 10.175.91.211:9092,10.175.91.212:9092,10.175.91.213:9092
+      brokers:  10.47.39.67:9092,10.47.39.124:9092
+
+      
+# Logging  
+logging:
+  level:
+    kr.go.gmd.eips: INFO
+    org.apache.camel.component.sql.DefaultSqlPrepareStatementStrategy: TRACE #쿼리 보고 싶을 경우
+    org.apache.camel.component.sql.stored: debug
+    kr.go.gmd.eips.center.gmdm.provide.monitor.qualify.repository.QualifyRepository: INFO
+    org.apache.kafka.clients.consumer.ConsumerConfig: error
+    org.apache.kafka: warn
