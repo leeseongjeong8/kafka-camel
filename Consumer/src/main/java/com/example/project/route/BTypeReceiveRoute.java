@@ -42,6 +42,7 @@ public class BTypeReceiveRoute extends EndpointRouteBuilder {
 		errorHandler(deadLetterChannel("direct:"+ERROR_SAVE_ROUTE).maximumRedeliveries(5).maximumRedeliveryDelay(5000));
 	
 		String directory = csvFileConfig.getFileDir();
+		String hi="";
 		String name = csvFileConfig.getFileName();
 		createFileUtil.createFile(directory, name);
 		
@@ -53,6 +54,7 @@ public class BTypeReceiveRoute extends EndpointRouteBuilder {
 		.to(file(directory + "?fileName=" + name + "&fileExist=Append"))
 		.process(e -> {
 			e.getIn().setHeader("type", "receive");
+			
 		}).to(direct(HISTORY_WRITE_ROUTE)).log("B type은 history Write에 도달")
 		.log("BRoute의 ConsumerId는 " + consumerGroupConfig.getbRouteGroupId());
 

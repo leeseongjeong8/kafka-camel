@@ -6,7 +6,6 @@ import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 import org.apache.camel.dataformat.csv.CsvDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.stereotype.Component;
 
 import com.example.project.config.CSVFileConfig;
@@ -29,11 +28,12 @@ public class ErrorSaveRoute extends EndpointRouteBuilder{
 	
 	@Autowired
 	private CreateFileUtil createFileUtil;
-
-	public static final String ERROR_SAVE_ROUTE = ErrorSaveRoute.class.getSimpleName();
-	public String jsonFileName;
 	
 
+	public static final String ERROR_SAVE_ROUTE = ErrorSaveRoute.class.getSimpleName();
+
+
+	@SuppressWarnings("static-access")
 	@Override
 	public void configure() throws Exception {
 		
@@ -41,38 +41,40 @@ public class ErrorSaveRoute extends EndpointRouteBuilder{
 		
 		String jsonDirectory = jsonFileConfig.getDataFileDir();
 		
-
 		from(direct(ERROR_SAVE_ROUTE)).routeId(ERROR_SAVE_ROUTE)
 		.process(e->{
 			
-			if((e.getProperty(e.FAILURE_ROUTE_ID, String.class)).equals("ATypeReceiveRoute")) {
-		
-				jsonFileName=jsonFileConfig.getDataAFileName();
-			
-			}else if((e.getProperty(e.FAILURE_ROUTE_ID, String.class)).equals("BTypeReceiveRoute")) {
-			
-				jsonFileName=jsonFileConfig.getDataBFileName();
+			 if((e.getProperty(e.FAILURE_ROUTE_ID,String.class)).equals("ATypeReceiveRoute")) {
+				 
+				 e.getIn().setHeader("jsonFileName" ,jsonFileConfig.getDataAFileName());
 				
+				 
+			 }else if((e.getProperty(e.FAILURE_ROUTE_ID,String.class)).equals("BTypeReceiveRoute")) {
+				  
+				 e.getIn().setHeader("jsonFileName" ,jsonFileConfig.getDataBFileName());
+					  
 			}else {
-				jsonFileName="otherError";
-			}
-		
-			createFileUtil.createFile(jsonDirectory, jsonFileName);
+					  
+				 e.getIn().setHeader("jsonFileName" ,"otherErrorFile");
+				 
+			}//if~else
+					 
+			
+			createFileUtil.createFile(jsonDirectory, (String)e.getMessage().getHeader("jsonFileName"));
+			
 		})
 		.marshal().json(JsonLibrary.Jackson)
-		.to(file(jsonDirectory + "?fileName=" + jsonFileName + "&fileExist=Append"))
-		.process(e->{
-			System.out.println(jsonFileName);
-		})
-		.log(jsonFileName)
+		.to(file(jsonDirectory + "?fileName=${headers.jsonFileName}&fileExist=Append"))
 		.process(errorProcessor)
 		.marshal(new CsvDataFormat().setDelimiter(';'))
-		.to(file(csvFileConfig.getErrorfileDir()+"?fileName="+csvFileConfig.getErrorFileName()+"&fileExist=Append"))
+		//.to(file(csvFileConfig.getErrorfileDir()+"?fileName="+csvFileConfig.getErrorFileName()+"&fileExist=Append"))
 		.log("에러정보 -> csv 성공");
 		
 		
 		
 	}
+	
+
 	
 	
 }

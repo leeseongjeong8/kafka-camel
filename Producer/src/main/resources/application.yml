@@ -89,9 +89,4 @@ camel:
 logging:
   level:
     root: error
-    kr.go.gmd.eips: INFO
-    org.apache.camel.component.sql.DefaultSqlPrepareStatementStrategy: TRACE #쿼리 보고 싶을 경우
-    org.apache.camel.component.sql.stored: debug
-    kr.go.gmd.eips.center.gmdm.provide.monitor.qualify.repository.QualifyRepository: INFO
-    org.apache.kafka.clients.consumer.ConsumerConfig: error
     org.apache.kafka: warn
